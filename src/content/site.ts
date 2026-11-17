@@ -97,18 +97,18 @@ export const navStudios: NavLink[] = [
  * Shown beside "Pricing" and "Upgrade". It is the real saving from paying yearly
  * (ten months charged for twelve, see src/server/account/plans.ts). Empty hides it.
  */
-export const pricingBadge = "-17%";
+export const pricingBadge = "";
 
 /**
  * The strip above the nav. It counts down to `endsAt` and removes itself after that.
  * Set `enabled` to false to drop it.
  *
- * Keep it true. The countdown is real: the code below is seeded by
+ * When enabled, the countdown uses the code seeded by
  * migrations/100_launch.sql with the same end time, and the server refuses it afterwards.
  * To run a new offer, add a migration with the new code and change `id`, `code` and `endsAt`.
  */
 export const promo = {
-  enabled: true,
+  enabled: false,
   /** Change this when the offer changes, so people who closed the last one see the new one. */
   id: "launch-week-2026-11",
   endsAt: "2026-11-20T08:00:00Z",

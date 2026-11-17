@@ -1,4 +1,23 @@
-# Parallax
+# Ace Studio
+
+Ace Studio adapts [Parallax](https://github.com/nickvasilescu/parallax) into a workspace for images, video and audio. The home page links directly to the studios, Cinema, Canvas, Remix and the asset library.
+
+## Local demo on Windows
+
+From this checkout, run in PowerShell with Node.js 22.13 or newer.
+
+```powershell
+npm.cmd ci --ignore-scripts
+$env:TREG_MODE = 'mock'
+$env:SUPER_MODE = 'mock'
+$env:PARALLAX_DEMO_BILLING = 'off'
+$env:PARALLAX_DEMO_SEED = '1'
+npm.cmd run dev -- --hostname 127.0.0.1 --port 3210
+```
+
+Open [Ace Studio](http://127.0.0.1:3210). Mock mode returns bundled samples without a provider key. See [LICENSE](LICENSE) for the upstream MIT notice.
+
+## Parallax upstream overview
 
 **An open-source AI image, video and audio studio, with an agent chat you can run on your own Hermes agent.**
 

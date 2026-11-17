@@ -1,4 +1,4 @@
-// The home page (/) and the Explore feed (/explore), from an empty community to a shared post.
+// The Ace Studio workspace (/) and sharing work to the Explore feed (/explore).
 // Run it with: python3 tests/run.py tests/ui/home.mjs
 // (the runner starts the app in mock mode on a fresh data folder and calls:
 //  node tests/ui/home.mjs <base-url> <out-dir> [width] [height])
@@ -15,7 +15,6 @@ const noSideways = async () => {
     throw new Error(`page is wider than the window: ${who}`);
   }
 };
-const scrollTo = (sel) => b.evaluate(`(() => { const el = document.querySelector(${JSON.stringify(sel)}); if (!el) return false; el.scrollIntoView({ block: "start" }); window.scrollBy(0, -60); return true; })()`);
 
 // Runs in the page: sign up, generate in mock mode, wait for the result, publish it.
 const seed = `(async () => {
@@ -48,81 +47,25 @@ const seed = `(async () => {
 let ok = false;
 try {
   ok = await scenario(b, [
-    ["open / with an empty community", async () => {
+    ["open the Ace Studio workspace", async () => {
       await b.goto(`${base}/`);
-      await b.until(`!!document.querySelector('[aria-roledescription="carousel"]')`, 15000, "the carousel");
-      await b.until(`document.querySelectorAll('[data-empty]').length >= 3`, 15000, "empty states in the community sections");
-      await b.sleep(700);
-      await b.shot("01-top");
-      const h2 = await b.evaluate(`[...document.querySelectorAll("main h2")].map((h) => h.textContent.trim()).join(" | ")`);
-      return h2;
+      await b.until(`document.querySelector("main h1")?.textContent.trim() === "Ace Studio"`, 5000, "workspace title");
+      await b.until(`document.querySelector("main img")?.naturalWidth > 0`, 5000, "cinema artwork");
+      const links = await b.evaluate(`[...document.querySelectorAll("main a")].map((a) => a.getAttribute("href")).join(",")`);
+      const expected = "/image,/video,/audio,/cinema,/remix,/canvas,/library";
+      if (links !== expected) throw new Error(`workspace links are ${links}`);
+      await b.shot("01-workspace");
     }],
     ["no sideways scroll on /", noSideways],
-    ["the open contest has a banner", async () => {
-      await b.until(`!!document.querySelector('[data-section="contest"]')`, 10000, "contest banner");
-      await scrollTo('[data-section="contest"]');
-      await b.sleep(400);
-      await b.shot("02-mcp-contest");
-      const href = await b.evaluate(`document.querySelector('[data-section="contest"] a').getAttribute("href")`);
-      if (!href.startsWith("/contests/")) throw new Error(`contest link is ${href}`);
-      return href;
-    }],
-    ["empty sections invite the first post", async () => {
-      await scrollTo('[data-section="shorts"]');
-      await b.sleep(400);
-      await b.shot("03-empty-shorts");
-      const ctas = await b.evaluate(`[...document.querySelectorAll("[data-empty] a")].map((a) => a.getAttribute("href")).join(",")`);
-      if (!ctas) throw new Error("no button in the empty state");
-      return ctas;
-    }],
-    ["carousel arrows and dots move it", async () => {
-      await b.evaluate(`window.scrollTo(0, 0)`);
-      await b.sleep(200);
-      const before = await b.evaluate(`[...document.querySelectorAll('[aria-roledescription="carousel"] button[aria-current]')].map((x) => x.getAttribute("aria-label")).join()`);
-      if (width >= 640) {
-        await b.hover('[aria-roledescription="carousel"] li');
-        await b.sleep(200);
-        await b.click('[aria-roledescription="carousel"] button', "Next slide");
-      } else {
-        await b.click('[aria-roledescription="carousel"] button', "Slide 2 of");
-      }
-      await b.sleep(700);
-      const after = await b.evaluate(`[...document.querySelectorAll('[aria-roledescription="carousel"] button[aria-current]')].map((x) => x.getAttribute("aria-label")).join()`);
-      if (before === after) throw new Error(`still on ${after}`);
-      await b.shot("04-carousel-next");
-      return `${before} -> ${after}`;
+    ["a workspace link opens its studio", async () => {
+      await b.click('main a[href="/image"]');
+      await b.until(`location.pathname === "/image" && !!document.querySelector("main textarea")`, 15000, "image studio");
+      await b.goto(`${base}/`);
     }],
     ["share three posts as a member", async () => {
       const r = await b.evaluate(seed);
       return r;
     }],
-    ["the home grids show real posts", async () => {
-      await b.goto(`${base}/`);
-      await b.until(`document.querySelectorAll('[data-section="trending"] article').length >= 2`, 15000, "tiles in trending");
-      await scrollTo('[data-section="shorts"]');
-      await b.sleep(800);
-      await b.shot("05-shorts");
-      await scrollTo('[data-section="trending"]');
-      await b.until(`[...document.querySelectorAll('[data-section="trending"] article img')].every((i) => i.complete)`, 10000, "pictures loaded");
-      await b.sleep(500);
-      await b.shot("06-trending");
-      await scrollTo('[data-section="fresh"]');
-      await b.sleep(500);
-      await b.shot("07-fresh");
-      await scrollTo('[data-section="image"]');
-      await b.sleep(500);
-      await b.shot("08-image");
-      const link = await b.evaluate(`document.querySelector('[data-section="trending"] article a').getAttribute("href")`);
-      if (!link.startsWith("/community/post/")) throw new Error(`tile links to ${link}`);
-      const models = await b.evaluate(`[...document.querySelectorAll('[data-section^="model-"] h2')].map((h) => h.textContent).join(",")`);
-      return `tile -> ${link}; model sections: ${models || "none"}`;
-    }],
-    ["the bottom of the page", async () => {
-      await scrollTo("#home-more");
-      await b.sleep(400);
-      await b.shot("09-more");
-    }],
-    ["no sideways scroll with posts", noSideways],
     ["open /explore", async () => {
       await b.goto(`${base}/explore`);
       await b.until(`document.querySelectorAll('ul[aria-label="Community work"] article').length >= 2`, 15000, "explore tiles");
@@ -188,15 +131,14 @@ try {
       await b.until(`document.querySelector('ul[aria-label="Community work"] li:nth-child(2) button[aria-pressed="true"]') !== null`, 5000, "guest like");
       if (await b.evaluate(`!!document.querySelector('[role="dialog"]')`)) throw new Error("guest was asked to sign in");
     }],
-    ["keyboard reaches the carousel and a tile", async () => {
+    ["keyboard reaches the workspace links", async () => {
       await b.goto(`${base}/`);
-      await b.until(`document.querySelectorAll('[data-section="trending"] article').length >= 2`, 15000, "tiles");
       for (let i = 0; i < 40; i++) {
         await b.key("Tab");
-        if (await b.evaluate(`!!document.activeElement?.closest('[aria-roledescription="carousel"]')`)) break;
+        if (await b.evaluate(`!!document.activeElement?.closest("main a")`)) break;
       }
-      const inCarousel = await b.evaluate(`!!document.activeElement?.closest('[aria-roledescription="carousel"]')`);
-      if (!inCarousel) throw new Error("Tab never reached the carousel");
+      const href = await b.evaluate(`document.activeElement?.getAttribute("href")`);
+      if (href !== "/image") throw new Error(`first workspace link focused was ${href}`);
       await b.shot("16-focus");
     }],
   ]);

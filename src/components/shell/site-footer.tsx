@@ -14,8 +14,9 @@ export function SiteFooter() {
   return (
     <footer className="flex min-h-[68px] shrink-0 flex-col items-start justify-center gap-3 bg-page px-6 py-6 min-[900px]:flex-row min-[900px]:items-center min-[900px]:justify-between min-[900px]:py-0">
       <p className="flex flex-wrap items-center text-sm leading-5 text-[#FFFFFF99]">
-        <span>{footerWords.legal}</span>
-        <span>&nbsp;{footerWords.rights}</span>
+        <a href={footerWords.attribution.href} className="underline-offset-4 hover:underline">
+          {footerWords.attribution.label}
+        </a>
       </p>
       <nav aria-label="Footer" className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <Popover>

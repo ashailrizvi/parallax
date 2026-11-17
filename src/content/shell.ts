@@ -144,8 +144,10 @@ export const accountWords = {
 } as const;
 
 export const footerWords = {
-  legal: `© 2026 ${brand.name}.`,
-  rights: "All rights reserved.",
+  attribution: {
+    label: "Based on Parallax · MIT license",
+    href: "https://github.com/nickvasilescu/parallax/blob/main/LICENSE",
+  },
   links: [
     { label: "Guide", href: routes.guide },
     { label: "What's new", href: routes.whatsNew },

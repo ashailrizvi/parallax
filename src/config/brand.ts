@@ -1,14 +1,13 @@
 /**
- * Everything that names the product lives here, so a rename is a one-file change.
- * This is an original brand. It reuses no name, logo, copy or artwork from any other product.
+ * Shared product name, metadata and repository link.
  */
 export const brand = {
-  name: "Parallax",
-  tagline: "One studio for every generative model.",
+  name: "Ace Studio",
+  tagline: "Image, motion and sound",
   description:
-    "An open-source creative studio. Pick a model, set the shot, see the price before you press Generate.",
+    "A creative workspace for stills, motion, sound and shot planning. Built on Parallax.",
   /** Shown in the footer and the About dialog. */
-  repoUrl: "",
+  repoUrl: "https://github.com/ashailrizvi/parallax",
   creditName: "credit",
   creditNamePlural: "credits",
 } as const;

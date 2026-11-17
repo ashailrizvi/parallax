@@ -202,6 +202,14 @@ html[data-closed~="cinemaGuide"] [data-closable="cinemaGuide"] {
   display: none;
 }
 
+.studio-workspace-shell {
+  --color-brand: #ffd092;
+  --color-brand-pressed: #e7aa65;
+  --color-brand-glow: #ffe0b5;
+  --color-brand-tint: #ffd09226;
+  --color-brand-chip: #ffd0923d;
+}
+
 /* Thin, quiet scrollbars for panels that scroll inside the page. */
 @utility scroll-quiet {
   scrollbar-width: thin;

@@ -20,23 +20,25 @@ import { SiteFooter } from "./site-footer";
  * taller bar with the big menus, on the home and marketing pages). `footer` adds the site
  * footer under the page; it has no effect with `fixed`.
  *
- * These five props are a contract: pages all over the app pass them. Keep them working.
+ * `className` can scope theme overrides to a single page and its chrome.
  */
 export function AppShell({
   active,
   fixed,
   nav = "compact",
   footer,
+  className,
   children,
 }: {
   active?: NavId;
   fixed?: boolean;
   nav?: "compact" | "full";
   footer?: boolean;
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <div className={cn("flex flex-col", fixed ? "h-dvh overflow-hidden" : "min-h-dvh")}>
+    <div className={cn("flex flex-col", fixed ? "h-dvh overflow-hidden" : "min-h-dvh", className)}>
       <PromoBanner />
       {nav === "full" ? <FullNav active={active} /> : <CompactNav active={active} />}
       <main className="relative flex min-h-0 flex-1 flex-col">{children}</main>

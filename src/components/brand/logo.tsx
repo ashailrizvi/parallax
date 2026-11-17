@@ -2,8 +2,7 @@ import { brand } from "@/config/brand";
 import { cn } from "@/ui";
 
 /**
- * The Parallax mark: two slanted bars, the near one solid and the far one faint, on a white
- * tile. It is our own drawing. `size` is the tile's side in pixels (20 in the nav, 18 inline).
+ * The Ace Studio mark. `size` is the tile's side in pixels.
  */
 export function LogoMark({ size = 20, className, title }: { size?: number; className?: string; title?: string }) {
   return (
@@ -16,9 +15,8 @@ export function LogoMark({ size = 20, className, title }: { size?: number; class
       aria-hidden={title ? undefined : true}
       className={cn("shrink-0", className)}
     >
-      <rect width="20" height="20" rx="6" fill="#FFFFFF" />
-      <path d="M4.5 14.5 8.4 5.5h3.1l-3.9 9z" fill="#131517" />
-      <path d="M10.4 14.5l3.9-9h1.9l-3.9 9z" fill="#131517" fillOpacity="0.45" />
+      <rect width="20" height="20" rx="4" fill="#FFD092" />
+      <path d="M5 15 9 5h2l4 10h-2.25l-.9-2.5h-3.7l-.9 2.5H5Zm3.8-4.25h2.4L10 7.5l-1.2 3.25Z" fill="#24170D" />
     </svg>
   );
 }
