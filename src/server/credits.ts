@@ -1,5 +1,6 @@
 import "server-only";
 
+import { personalStudio } from "@/config/studio-mode";
 import { all, get, run, tx } from "./db";
 
 /**
@@ -20,10 +21,12 @@ export interface LedgerRow {
 }
 
 export function balance(userId: string): number {
+  if (personalStudio) return 0;
   return get<{ total: number }>("SELECT COALESCE(SUM(amount), 0) AS total FROM ledger WHERE user_id = ?", userId)!.total;
 }
 
 export function grant(userId: string, kind: LedgerKind, amount: number, note: string, jobId: string | null = null) {
+  if (!amount || (personalStudio && !jobId)) return;
   run("INSERT INTO ledger (user_id, kind, amount, job_id, note, created_at) VALUES (?, ?, ?, ?, ?, ?)", userId, kind, Math.round(amount), jobId, note, Date.now());
 }
 

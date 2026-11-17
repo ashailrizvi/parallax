@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import {
   AudioLines,
   Check,
@@ -612,7 +613,7 @@ function Problem({ studio }: { studio: Studio }) {
   const needsAccount =
     studio.errorCode === "account_required" ||
     studio.errorCode === "unauthorized";
-  const needsCredits = studio.errorCode === "insufficient_credits";
+  const needsCredits = !personalStudio && studio.errorCode === "insufficient_credits";
   return (
     <div
       role="alert"

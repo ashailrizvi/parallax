@@ -2,6 +2,7 @@
  * The words of the entry screens: the sign-in window, search, notifications and "What's new".
  * Layout and style come from the design; every word here is ours.
  */
+import { personalStudio } from "@/config/studio-mode";
 import { brand } from "@/config/brand";
 
 export const loginCopy = {
@@ -88,7 +89,7 @@ export const notifyCopy = {
     { id: "all", label: "All", kinds: null, unread: false },
     { id: "unread", label: "Unread", kinds: null, unread: true },
     { id: "activity", label: "Generations", kinds: "generation_done,generation_failed", unread: false },
-    { id: "account", label: "Account", kinds: "credits_low,plan,system", unread: false },
+    { id: "account", label: "Account", kinds: personalStudio ? "system" : "credits_low,plan,system", unread: false },
     { id: "social", label: "Social", kinds: "like,comment,follow", unread: false },
     { id: "news", label: "News", kinds: "announcement", unread: false },
   ],
@@ -110,7 +111,9 @@ export const notifyCopy = {
   locked: "Always on",
   groups: { activity: "Generations", account: "Account", social: "Social", news: "News" } as Record<string, string>,
   signedOutTitle: "Sign in to see your notifications",
-  signedOutBody: "When a generation finishes or your credits run low, you will hear about it here.",
+  signedOutBody: personalStudio
+    ? "Sign in to see when your generations finish."
+    : "When a generation finishes or your credits run low, you will hear about it here.",
   signIn: "Log in",
   join: "Create account",
   whatsNew: "What's new",

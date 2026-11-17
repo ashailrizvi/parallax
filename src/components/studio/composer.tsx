@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { CircleAlert, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { routes } from "@/content/site";
@@ -32,7 +33,7 @@ function Trouble({ studio }: { studio: Studio }) {
       <div role="alert" className="flex max-w-full animate-rise-in items-center gap-2 rounded-full bg-surface-secondary-strong py-[6px] pr-[6px] pl-3 shadow-menu">
         <CircleAlert className="size-4 shrink-0 text-danger" strokeWidth={1.5} aria-hidden />
         <span className="min-w-0 text-sm leading-5 text-text-primary">{studio.error}</span>
-        {studio.errorCode === "insufficient_credits" ? (
+        {!personalStudio && studio.errorCode === "insufficient_credits" ? (
           <ButtonLink href={routes.pricing} variant="white" size="pill-xs">
             Get credits
           </ButtonLink>
@@ -105,7 +106,7 @@ export function Composer({ studio, placeholder, extra }: { studio: Studio; place
               )}
             </div>
             <div className="flex flex-wrap items-center gap-1">
-              <ReferenceChip studio={studio} />
+              {!personalStudio || studio.slots.length > 0 ? <ReferenceChip studio={studio} /> : null}
               <ModelPicker studio={studio} />
               {studio.controls.main.map((control) => (
                 <ControlChip key={control.id} control={control} studio={studio} />

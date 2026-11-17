@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { ArrowUp, Boxes, Layers, Package, Palette, Plus, Shapes, UserRound, WandSparkles } from "lucide-react";
 import { useState, type ComponentProps, type RefObject } from "react";
 import { formatCredits } from "@/config/economy";
@@ -67,7 +68,7 @@ function StylePicker({ s }: { s: ComposerState }) {
             disabled={!f.available}
             onClick={() => s.toggleFormat(f.id)}
             icon={<Layers className="size-4 text-text-secondary" strokeWidth={1.5} aria-hidden />}
-            hint={f.available ? (f.pricePerAd !== null ? `${formatCredits(f.pricePerAd)} ${ads.pickers.perAd}` : null) : ads.pickers.offline}
+            hint={f.available ? (!personalStudio && f.pricePerAd !== null ? `${formatCredits(f.pricePerAd)} ${ads.pickers.perAd}` : null) : ads.pickers.offline}
           >
             {f.name}
           </MenuItem>
@@ -245,9 +246,11 @@ export function AdsComposer({ s, textRef }: { s: ComposerState; textRef: RefObje
           </div>
           <div className="ml-auto flex items-center gap-1">
             <VariationsPicker s={s} />
-            <span className="flex h-6 items-center px-[6px] text-xs leading-4 font-medium text-text-secondary" aria-live="polite" data-testid="ads-price">
-              {s.price ? `${s.price.approx ? "≈" : ""}${formatCredits(s.price.total)} credits` : "—"}
-            </span>
+            {!personalStudio ? (
+              <span className="flex h-6 items-center px-[6px] text-xs leading-4 font-medium text-text-secondary" aria-live="polite" data-testid="ads-price">
+                {s.price ? `${s.price.approx ? "≈" : ""}${formatCredits(s.price.total)} credits` : "—"}
+              </span>
+            ) : null}
             <button
               type="button"
               onClick={s.onDraftScript}

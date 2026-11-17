@@ -2,6 +2,7 @@
  * Words for the member's own pages: settings, notification settings, wallet and invites.
  * Layout and style come from the design; every word here is Parallax's own.
  */
+import { personalStudio } from "@/config/studio-mode";
 import { brand } from "@/config/brand";
 
 export const accountNav = {
@@ -129,7 +130,9 @@ export const languageNames: Record<string, string> = {
 export const deleteCopy = {
   title: "Delete account",
   hint: "This cannot be undone",
-  body: `This removes your account and everything in it: files, jobs, credits, plan, receipts and invites. Credits are not refunded.`,
+  body: personalStudio
+    ? "This removes your account, files and generations."
+    : "This removes your account and everything in it: files, jobs, credits, plan, receipts and invites. Credits are not refunded.",
   typeLabel: "Type DELETE to confirm",
   word: "DELETE",
   password: "Current password",

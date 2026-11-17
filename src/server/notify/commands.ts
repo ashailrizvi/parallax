@@ -1,6 +1,7 @@
 import "server-only";
 
 import { primaryNav } from "@/config/brand";
+import { personalStudio, showStudioLink } from "@/config/studio-mode";
 import { matchOf } from "./search";
 
 /**
@@ -41,14 +42,15 @@ const OWN: Command[] = [
   c({ id: "clear-searches", type: "action", group: "Actions", label: "Clear recent searches", hint: "Forget what you searched for", api: { method: "DELETE", path: "/api/search/recent", body: null }, keywords: ["history", "forget"], audience: "member" }),
   c({ id: "sign-out", type: "action", group: "Actions", label: "Sign out", hint: "End this session", href: "/", api: { method: "POST", path: "/api/auth/logout", body: null }, keywords: ["log out", "logout"], audience: "member" }),
   c({ id: "sign-in", type: "go", group: "Actions", label: "Sign in", hint: "Use your Parallax account", href: "/login", keywords: ["log in", "login", "account"], audience: "visitor" }),
-  c({ id: "try-as-guest", type: "action", group: "Actions", label: "Try without an account", hint: "Start as a guest with free credits", api: { method: "POST", path: "/api/auth/guest", body: null }, keywords: ["guest", "demo"], audience: "visitor" }),
+  c({ id: "try-as-guest", type: "action", group: "Actions", label: "Try without an account", hint: personalStudio ? "Start as a guest" : "Start as a guest with free credits", api: { method: "POST", path: "/api/auth/guest", body: null }, keywords: ["guest", "demo"], audience: "visitor" }),
 ];
 
 export function commands(signedIn: boolean, rawQuery = ""): Command[] {
   const nav = primaryNav.map((n, i) =>
     c({ id: `go-${n.href.replace(/^\//, "") || "home"}`, type: "go", group: "Go to", label: n.label, hint: n.blurb, href: n.href, shortcut: i < 9 ? `G ${i + 1}` : null }),
   );
-  const list = [...nav, ...OWN].filter((x) => x.audience === "all" || (x.audience === "member") === signedIn);
+  const list = [...nav, ...OWN].filter((x) =>
+    (!x.href || showStudioLink(x.href)) && (x.audience === "all" || (x.audience === "member") === signedIn));
   const q = rawQuery.trim().toLowerCase();
   if (!q) return list;
   const order = new Map(list.map((x, i) => [x.id, i]));

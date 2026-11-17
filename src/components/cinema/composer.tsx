@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import {
   AtSign,
   ChevronRight,
@@ -336,7 +337,7 @@ function Toolbar() {
 
 function GenerateButton({ onGenerate }: { onGenerate: () => void }) {
   const { busy, price: millicredits } = useCinema();
-  const price = millicredits === null ? null : formatCredits(millicredits);
+  const price = personalStudio || millicredits === null ? null : formatCredits(millicredits);
   return (
     <button
       type="button"

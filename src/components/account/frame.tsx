@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio, showStudioLink } from "@/config/studio-mode";
 import { Bell, ChevronRight, CircleHelp, Coins, Gift, KeyRound, LogOut, MonitorSmartphone, SlidersHorizontal, Trash2, UserRound, Wallet, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -151,14 +152,14 @@ function SidePanel({ page }: { page: AccountPage }) {
           <Avatar name={name} url={user.avatarUrl} size={40} />
           <span className="flex min-w-0 grow flex-col">
             <span className="truncate text-sm leading-5 font-medium text-text-primary">{name}</span>
-            <span className="truncate text-sm leading-5 text-text-secondary">{planLabel}</span>
+            {!personalStudio ? <span className="truncate text-sm leading-5 text-text-secondary">{planLabel}</span> : null}
           </span>
           <ChevronRight className="size-4 shrink-0 text-text-secondary" strokeWidth={1.5} aria-hidden />
         </Link>
       ) : null}
-      {user ? <CreditsCard /> : null}
+      {user && !personalStudio ? <CreditsCard /> : null}
       <nav aria-label={accountNav.label} className="flex flex-col pt-[2px]">
-        {allItems.map((item) => (
+        {allItems.filter((item) => showStudioLink(item.href)).map((item) => (
           <Row key={item.key} item={item} page={page} />
         ))}
       </nav>

@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Copy, Download, Ellipsis, Film, LoaderCircle, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
@@ -278,13 +279,15 @@ function BatchButton({ projectId }: { projectId: string }) {
         ) : (
           <>
             <p className="text-sm leading-5 text-text-secondary">{t.batchBody(q.data.quote.count)}</p>
-            <div className="flex items-center justify-between text-sm leading-5">
-              <span className="text-text-secondary">{t.batchCost}</span>
-              <span className="flex items-center gap-1 font-medium">
-                <Sparkles className="size-3 fill-current" strokeWidth={1.5} aria-hidden />
-                {formatCredits(q.data.quote.total)}
-              </span>
-            </div>
+            {!personalStudio ? (
+              <div className="flex items-center justify-between text-sm leading-5">
+                <span className="text-text-secondary">{t.batchCost}</span>
+                <span className="flex items-center gap-1 font-medium">
+                  <Sparkles className="size-3 fill-current" strokeWidth={1.5} aria-hidden />
+                  {formatCredits(q.data.quote.total)}
+                </span>
+              </div>
+            ) : null}
             <Button variant="lime" size="md" disabled={busy || !q.data.quote.affordable} onClick={() => void start()}>
               {busy ? <LoaderCircle className="size-4 animate-spin" strokeWidth={1.5} aria-hidden /> : null}
               {t.batchStart}

@@ -2,6 +2,7 @@
  * The shell's own words and lists: the big nav menus, the account menu, the bell, the small-screen
  * panel and the footer. Page addresses come from `routes`; model names come from the registry.
  */
+import { showStudioLink } from "@/config/studio-mode";
 import { brand } from "@/config/brand";
 import { routes } from "@/content/site";
 
@@ -154,5 +155,5 @@ export const footerWords = {
     { label: "API", href: routes.developer },
     { label: "Enterprise", href: routes.enterprise },
     { label: "Pricing", href: routes.pricing },
-  ],
+  ].filter((link) => showStudioLink(link.href)),
 } as const;

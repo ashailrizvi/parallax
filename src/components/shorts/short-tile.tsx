@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { RotateCcw, TriangleAlert, X } from "lucide-react";
 import { useRef } from "react";
 import { shortsCopy } from "@/content/shorts";
@@ -101,7 +102,7 @@ export function FailedTile({ job, onRetry, onRemove, busy }: { job: Job; onRetry
     <div className={cn(TILE, "flex flex-col items-center justify-center gap-3 px-4 text-center")}>
       <TriangleAlert className="size-6 text-danger" strokeWidth={1.5} aria-hidden />
       <p className="text-sm leading-5 text-text-primary">{job.error?.message ?? copy.failedFallback}</p>
-      <p className="text-xs leading-4 text-text-secondary">{copy.refunded}</p>
+      {!personalStudio ? <p className="text-xs leading-4 text-text-secondary">{copy.refunded}</p> : null}
       <p className="line-clamp-2 text-xs leading-4 text-text-tertiary">{job.prompt}</p>
       <div className="flex flex-wrap justify-center gap-2">
         <button

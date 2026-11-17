@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Composer, ComposerDock } from "@/components/studio";
+import { personalStudio } from "@/config/studio-mode";
 import { imageCopy } from "@/content/image";
 import { heroes } from "@/content/site";
 import { useStudio } from "@/lib/studio";
@@ -96,7 +97,7 @@ export function ImageStudio() {
             onClear={() => setPicked(new Set())}
           />
         ) : (
-          <span />
+          personalStudio ? <p className="text-xs font-medium text-text-nav">Local ComfyUI</p> : <span />
         )}
         <div className="flex shrink-0 items-center gap-2">
           {hasWork ? <FilterMenu filters={filters} onFilters={setFilters} modelIds={modelIds} /> : null}

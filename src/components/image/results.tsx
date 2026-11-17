@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Check, CircleAlert, CircleSlash, Download, Heart, RotateCcw, Trash2, X } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { imageCopy } from "@/content/image";
@@ -139,7 +140,7 @@ function Failed({ job, onRetry, onRemove }: { job: Job; onRetry: () => void; onR
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
         <CircleAlert className="size-5 text-danger" strokeWidth={1.5} aria-hidden />
         <p className="line-clamp-3 text-sm leading-5 text-text-primary">{job.error?.message ?? t.failedFallback}</p>
-        <p className="text-xs leading-4 text-text-secondary">{t.refunded}</p>
+        {!personalStudio ? <p className="text-xs leading-4 text-text-secondary">{t.refunded}</p> : null}
         <div className="mt-1 flex gap-1">
           <button type="button" onClick={onRetry} className={smallButton}>
             <RotateCcw className="size-3" strokeWidth={1.5} aria-hidden />

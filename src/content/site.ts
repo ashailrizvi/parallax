@@ -4,6 +4,7 @@
  * from the design; the words and images here are original. Change the product's voice
  * in this one file.
  */
+import { showStudioLink } from "@/config/studio-mode";
 import { brand } from "@/config/brand";
 
 /** Every page address. Link with these, never with a typed-out string. */
@@ -74,14 +75,14 @@ export interface NavLink {
 }
 
 /** Left of the divider in the top nav. */
-export const navPrimary: NavLink[] = [
+export const navPrimary: NavLink[] = ([
   { id: "explore", href: routes.explore, label: "Explore" },
   { id: "image", href: routes.image, label: "Image" },
   { id: "video", href: routes.video, label: "Video" },
   { id: "audio", href: routes.audio, label: "Audio" },
   { id: "mcp", href: routes.mcp, label: "MCP" },
   { id: "developer", href: routes.developer, label: "API" },
-];
+] satisfies NavLink[]).filter((link) => showStudioLink(link.href));
 
 /** Right of the divider: the studios. */
 export const navStudios: NavLink[] = [

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { personalStudio } from "@/config/studio-mode";
 import { all, run } from "@/server/db";
 
 /**
@@ -27,7 +28,9 @@ export const ANNOUNCEMENTS: Announcement[] = [
   {
     id: "2026-11-notices",
     title: "Know when your work is done",
-    body: "You get a notice when a generation finishes or fails, and a heads-up before your credits run out. Choose which ones you want in notification settings.",
+    body: personalStudio
+      ? "Choose which generation notices you want to receive in notification settings."
+      : "You get a notice when a generation finishes or fails, and a heads-up before your credits run out. Choose which ones you want in notification settings.",
     link: "/settings/notifications",
     tag: "new",
     publishedAt: Date.UTC(2026, 10, 10),
@@ -48,7 +51,8 @@ export function whatsNew(userId: string | null) {
   const seen = new Set(
     userId ? all<{ announcement_id: string }>("SELECT announcement_id FROM notify_seen WHERE user_id = ?", userId).map((r) => r.announcement_id) : [],
   );
-  const items = ANNOUNCEMENTS.map((a) => ({ ...a, seen: seen.has(a.id) }));
+  const items = ANNOUNCEMENTS.filter((a) => !personalStudio || a.id !== "2026-11-prices")
+    .map((a) => ({ ...a, seen: seen.has(a.id) }));
   return { items, unseen: items.filter((a) => !a.seen).length };
 }
 

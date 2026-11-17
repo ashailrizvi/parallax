@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Download, Heart, RotateCcw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { formatCredits } from "@/config/economy";
@@ -78,10 +79,12 @@ export function Viewer({
                     <dt className="text-xs leading-4 text-text-tab">{copy.made}</dt>
                     <dd className="text-text-primary">{MADE.format(job.finishedAt ?? job.createdAt)}</dd>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <dt className="text-xs leading-4 text-text-tab">{copy.cost}</dt>
-                    <dd className="text-text-primary">{copy.credits(formatCredits(job.cost))}</dd>
-                  </div>
+                  {!personalStudio ? (
+                    <div className="flex flex-col gap-1">
+                      <dt className="text-xs leading-4 text-text-tab">{copy.cost}</dt>
+                      <dd className="text-text-primary">{copy.credits(formatCredits(job.cost))}</dd>
+                    </div>
+                  ) : null}
                 </div>
               </dl>
 

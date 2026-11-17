@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { ChevronLeft, CircleAlert, Download, Lock, Play, RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -101,7 +102,7 @@ function Failed({ job, onRetry }: { job: Job; onRetry?: () => void }) {
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
         <CircleAlert className="size-5 text-danger" strokeWidth={1.5} aria-hidden />
         <p className="line-clamp-3 text-sm leading-5 text-text-primary">{job.error?.message ?? appCopy.failed}</p>
-        <p className="text-xs leading-4 text-text-secondary">{appCopy.refunded}</p>
+        {!personalStudio ? <p className="text-xs leading-4 text-text-secondary">{appCopy.refunded}</p> : null}
         {onRetry ? (
           <button type="button" onClick={onRetry} className="mt-1 flex h-8 items-center gap-1 rounded-md bg-border-subtle px-3 text-sm leading-4 font-medium text-text-primary transition-colors duration-150 hover:bg-border-default">
             <RotateCcw className="size-4" strokeWidth={1.5} aria-hidden />
@@ -381,7 +382,7 @@ export function AppRunner({ id }: { id: string }) {
             >
               {busy ? <Spinner label={appCopy.running} /> : <Play className="size-3 fill-current" strokeWidth={1.5} aria-hidden />}
               {runLabel}
-              {available && price ? <span className="font-mono text-xs leading-4 text-[#131517B3]">· {formatCredits(price.millicredits)} {appCopy.credits}</span> : null}
+              {!personalStudio && available && price ? <span className="font-mono text-xs leading-4 text-[#131517B3]">· {formatCredits(price.millicredits)} {appCopy.credits}</span> : null}
             </button>
             {signedOut && available ? <p className="text-xs leading-4 text-text-secondary">{appCopy.signInBody}</p> : null}
             {!signedOut && missingInputs.length > 0 && available ? (

@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import {
   ChevronRight,
   ImagePlus,
@@ -276,7 +277,7 @@ function Problem({
 }) {
   const [join, setJoin] = useState(false);
   const needsAccount = failure.status === 401 || failure.status === 403;
-  const needsCredits = failure.code === "insufficient_credits";
+  const needsCredits = !personalStudio && failure.code === "insufficient_credits";
   return (
     <div
       role="alert"

@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { LoaderCircle, Sparkles } from "lucide-react";
 import { formatCredits } from "@/config/economy";
 import type { Studio } from "@/lib/studio";
@@ -26,16 +27,18 @@ export function GenerateButton({ studio, label = "Generate" }: { studio: Studio;
       </span>
       <span className="relative flex flex-col items-center">
         <span className="font-display text-xs leading-[18px] font-bold text-ink uppercase">{label}</span>
-        <span className="flex h-4 items-center gap-[2px] font-display text-xs leading-4 font-medium text-ink">
-          {studio.busy ? (
-            <LoaderCircle className="size-3 animate-spin" strokeWidth={2} aria-hidden />
-          ) : (
-            <>
-              <Sparkles className="size-3 fill-current" strokeWidth={1.5} aria-hidden />
-              {price ?? "–"}
-            </>
-          )}
-        </span>
+        {!personalStudio || studio.busy ? (
+          <span className="flex h-4 items-center gap-[2px] font-display text-xs leading-4 font-medium text-ink">
+            {studio.busy ? (
+              <LoaderCircle className="size-3 animate-spin" strokeWidth={2} aria-hidden />
+            ) : (
+              <>
+                <Sparkles className="size-3 fill-current" strokeWidth={1.5} aria-hidden />
+                {price ?? "–"}
+              </>
+            )}
+          </span>
+        ) : null}
       </span>
     </button>
   );

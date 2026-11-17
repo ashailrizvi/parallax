@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Flame } from "lucide-react";
 import { formatCredits } from "@/config/economy";
 import { ads } from "@/content/ads";
@@ -45,7 +46,7 @@ export function Trending({ formats, loading, failed, onRetry, onChoose }: { form
                     <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-3 sm:p-4">
                       <span className="text-sm leading-5 font-semibold text-text-primary">{f.name}</span>
                       <span className="line-clamp-2 text-xs leading-4 text-text-tab">{f.platform.label}</span>
-                      {f.pricePerAd !== null ? <span className="text-2xs leading-3 font-medium text-brand">{formatCredits(f.pricePerAd)} {ads.pickers.perAd}</span> : null}
+                      {!personalStudio && f.pricePerAd !== null ? <span className="text-2xs leading-3 font-medium text-brand">{formatCredits(f.pricePerAd)} {ads.pickers.perAd}</span> : null}
                     </div>
                   </button>
                 </li>

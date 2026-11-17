@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Blocks, Check, Folder, FolderX, Unplug, Zap } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -136,10 +137,12 @@ export function ContextRow({
             </PopoverContent>
           </Popover>
         </div>
-        <Link href={routes.mcp} className={cn(item, "shrink-0")}>
-          <Unplug className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
-          {copy.context.tryMcp}
-        </Link>
+        {!personalStudio ? (
+          <Link href={routes.mcp} className={cn(item, "shrink-0")}>
+            <Unplug className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
+            {copy.context.tryMcp}
+          </Link>
+        ) : null}
       </div>
     </div>
   );

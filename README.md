@@ -2,6 +2,17 @@
 
 Ace Studio adapts [Parallax](https://github.com/nickvasilescu/parallax) into a workspace for images, video and audio. The home page links directly to the studios, Cinema, Canvas, Remix and the asset library.
 
+## Personal workspace with ComfyUI
+
+1. Start your existing ComfyUI installation on a loopback address. Ace Studio uses ComfyUI 0.45.3 and the installed **MiniMax H3 Image – Text to Image** workflow. This integration uses ComfyUI's caller-supplied prompt IDs to resume polling after an Ace Studio restart.
+2. Enable developer options in ComfyUI and export the **API format** of that workflow. Save it locally as `data/comfy/h3-image-api.json` or set `ACE_STUDIO_H3_WORKFLOW` to an existing API export. The file contains the executable node map. Keep the trained weights in ComfyUI's normal model paths.
+3. In `.env.local`, set `NEXT_PUBLIC_ACE_STUDIO_MODE=personal` and set `ACE_STUDIO_COMFY_URL` to the loopback address, such as `http://127.0.0.1:8189`. Set these before starting the dev server or building for production.
+4. Run `npm.cmd ci --ignore-scripts` and `npm.cmd run dev -- --hostname 127.0.0.1 --port 3210`. Open [Image](http://127.0.0.1:3210/image), enter a prompt, and press **Generate**. A finished image appears in the Image history and Library for the active local session.
+
+Personal mode disables wallet, subscriptions, referrals and developer key/MCP routes. It also skips new credit holds and uses bundled samples for the other generation studios. The Image tab runs the saved H3 text-to-image graph with the selected aspect ratio and resolution, a random seed and one image per job. Neither ComfyUI nor the browser requires a provider token.
+
+Company use of H3 Image is subject to the [model's separate license](https://github.com/MiniMax-AI/MiniMax-H3-Image/blob/main/LICENSE).
+
 ## Local demo on Windows
 
 From this checkout, run in PowerShell with Node.js 22.13 or newer.
@@ -9,6 +20,7 @@ From this checkout, run in PowerShell with Node.js 22.13 or newer.
 ```powershell
 npm.cmd ci --ignore-scripts
 $env:TREG_MODE = 'mock'
+$env:NEXT_PUBLIC_ACE_STUDIO_MODE = 'demo'
 $env:SUPER_MODE = 'mock'
 $env:PARALLAX_DEMO_BILLING = 'off'
 $env:PARALLAX_DEMO_SEED = '1'

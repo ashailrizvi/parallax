@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Menu, PanelLeft, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -24,7 +25,7 @@ function Problem() {
   const [login, setLogin] = useState(false);
   if (!problem) return null;
   const needsAccount = problem.status === 401 || problem.status === 403;
-  const needsCredits = problem.status === 402;
+  const needsCredits = !personalStudio && problem.status === 402;
   return (
     <div role="alert" className="flex w-full max-w-[876px] items-center gap-3 rounded-xl border border-[#FF6B6B33] bg-[#FF6B6B14] px-3 py-2 text-sm leading-5 text-text-primary">
       <span className="min-w-0 flex-1">{problem.message}</span>

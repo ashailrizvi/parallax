@@ -5,12 +5,17 @@
  */
 import { musicModels, speechModels } from "./audio";
 import { imageModels } from "./image";
+import { localH3Image } from "./local";
 import { videoModels } from "./video";
 import type { ModelDef } from "./types";
+import { personalStudio } from "../config/studio-mode";
 
-export const models: ModelDef[] = [...imageModels, ...videoModels, ...speechModels, ...musicModels];
+export const models: ModelDef[] = [
+  ...(personalStudio ? [localH3Image] : []), ...imageModels, ...videoModels, ...speechModels, ...musicModels,
+];
 
 const byId = new Map(models.map((m) => [m.id, m]));
+byId.set(localH3Image.id, localH3Image);
 
 export function getModel(id: string | null | undefined): ModelDef | undefined {
   return id ? byId.get(id) : undefined;
@@ -18,6 +23,7 @@ export function getModel(id: string | null | undefined): ModelDef | undefined {
 
 /** Models for one studio or tool, in display order. */
 export function modelsFor(surface: string): ModelDef[] {
+  if (personalStudio && surface === "image") return [localH3Image];
   return models.filter((m) => m.surfaces.includes(surface));
 }
 

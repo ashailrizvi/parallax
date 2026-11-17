@@ -1,7 +1,9 @@
 import "server-only";
 
 import { MAX_BATCH, formatCredits, planOf } from "@/config/economy";
+import { personalStudio } from "@/config/studio-mode";
 import { assetRef, catalogEndpoint, getModel, quoteJob, resolveValues, visibleSlots, type Filled, type Kind, type MediaRef, type MediaType, type ModelDef, type Values } from "@/registry";
+import { COMFY_IMAGE_ENDPOINT, localH3Image } from "@/registry/local";
 import { assetsOfJobs, ownedAsset, removeAsset, toAsset, type Asset, type AssetRow } from "./assets";
 import type { User } from "./auth";
 import { balance, hold, release } from "./credits";
@@ -174,6 +176,10 @@ export interface SubmitInput {
 export function submitJobs(user: User, input: SubmitInput): Job[] {
   const model = getModel(typeof input.modelId === "string" ? input.modelId : null);
   if (!model) throw badRequest("Pick a model first.");
+  const isLocalModel = model.id === localH3Image.id;
+  if ((!personalStudio && isLocalModel) || (personalStudio && input.surface === "image" && !isLocalModel)) {
+    throw badRequest("Pick an image model available in this studio.");
+  }
   if (model.status !== "available") throw new ApiError(409, "model_unavailable", model.statusNote ?? `${model.name} is not available right now.`);
 
   let prompt = typeof input.prompt === "string" ? input.prompt.trim() : "";
@@ -207,16 +213,19 @@ export function submitJobs(user: User, input: SubmitInput): Job[] {
 
   const asked = Math.floor(Number(input.count)) || 1;
   const quote = quoteJob(model, { prompt, values, media, filled, count: model.batch.native ? asked : Math.min(asked, MAX_BATCH) });
-  if (!catalogEndpoint(quote.request.endpoint)) throw new ApiError(409, "model_unavailable", `${model.name} is not available right now.`);
+  if (quote.request.endpoint !== COMFY_IMAGE_ENDPOINT && !catalogEndpoint(quote.request.endpoint)) {
+    throw new ApiError(409, "model_unavailable", `${model.name} is not available right now.`);
+  }
 
   const have = balance(user.id);
   if (have < quote.millicredits) {
     throw new ApiError(402, "insufficient_credits", `This needs ${formatCredits(quote.millicredits)} credits and you have ${formatCredits(Math.max(0, have))}.`);
   }
 
-  const plan = planOf(user.plan);
+  const plan = planOf(personalStudio ? "free" : user.plan);
   if (activeCount(user.id) + quote.jobs > plan.concurrency) {
-    throw new ApiError(429, "too_many_jobs", `You can run ${plan.concurrency} at once on the ${plan.name} plan. Wait for one to finish.`);
+    const planLabel = personalStudio ? "" : ` on the ${plan.name} plan`;
+    throw new ApiError(429, "too_many_jobs", `You can run ${plan.concurrency} at once${planLabel}. Wait for one to finish.`);
   }
 
   if (tregMode() === "live") {
@@ -259,7 +268,7 @@ export function submitJobs(user: User, input: SubmitInput): Job[] {
         metaText.length <= 4000 ? metaText : "{}",
         now + i, // keeps a batch in a stable order
       );
-      hold(user.id, id, quote.perJob, model.name);
+      if (quote.perJob > 0) hold(user.id, id, quote.perJob, model.name);
     }
   });
 

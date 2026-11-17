@@ -1,3 +1,4 @@
+import { personalStudio } from "@/config/studio-mode";
 import "server-only";
 
 import { MILLI, planOf } from "@/config/economy";
@@ -93,6 +94,7 @@ function grantMonthlyCredits(sub: SubRow, now: number) {
 
 /** Renews or ends finished periods, then grants this month's credits. Safe to call on every request. */
 export function syncSubscription(userId: string) {
+  if (personalStudio) return;
   // Most members have no paid plan. Answer that from one read, without opening a write.
   if (subRow(userId)?.status !== "active") return;
   tx(() => {

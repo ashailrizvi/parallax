@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { CircleAlert, Power, Star, SkipBack, SkipForward, Volume2, VolumeX } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { LogoMark } from "@/components/brand/logo";
@@ -76,7 +77,7 @@ function Screen({ shown, muted }: { shown: Shown | null; muted: boolean }) {
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface-secondary px-6 text-center" role="alert">
         <CircleAlert className="size-5 text-danger" strokeWidth={1.5} aria-hidden />
         <p className="line-clamp-2 text-sm leading-5 text-text-primary">{item.error?.message ?? ads.player.failed}</p>
-        {item.status === "failed" ? <p className="text-xs leading-4 text-text-secondary">{ads.player.refunded}</p> : null}
+        {!personalStudio && item.status === "failed" ? <p className="text-xs leading-4 text-text-secondary">{ads.player.refunded}</p> : null}
       </div>
     );
   }

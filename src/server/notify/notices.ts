@@ -1,3 +1,4 @@
+import { personalStudio } from "@/config/studio-mode";
 import "server-only";
 
 import { all, get, newId, parseJson, run, type Param } from "@/server/db";
@@ -101,8 +102,13 @@ export function notify(userId: string, kind: NoticeKind, input: NotifyInput): No
   return notice;
 }
 
+const personalNoticeFilter = "kind NOT IN ('credits_low', 'plan')";
+
 export function unreadCount(userId: string): number {
-  return get<{ n: number }>("SELECT COUNT(*) AS n FROM notify_notices WHERE user_id = ? AND read_at IS NULL AND deleted_at IS NULL", userId)!.n;
+  return get<{ n: number }>(
+    `SELECT COUNT(*) AS n FROM notify_notices WHERE user_id = ? AND read_at IS NULL AND deleted_at IS NULL${personalStudio ? ` AND ${personalNoticeFilter}` : ""}`,
+    userId,
+  )!.n;
 }
 
 export interface NoticeFilter {
@@ -115,6 +121,7 @@ export interface NoticeFilter {
 export function listNotices(userId: string, f: NoticeFilter): Notice[] {
   const where = ["user_id = ?", "deleted_at IS NULL"];
   const params: Param[] = [userId];
+  if (personalStudio) where.push(personalNoticeFilter);
   if (f.unread) where.push("read_at IS NULL");
   if (f.kinds?.length) {
     where.push(`kind IN (${f.kinds.map(() => "?").join(",")})`);
@@ -166,7 +173,7 @@ export function removeNotice(userId: string, id: string) {
 export function preferences(userId: string) {
   const rows = all<{ kind: string; enabled: number }>("SELECT kind, enabled FROM notify_prefs WHERE user_id = ?", userId);
   const set = new Map(rows.map((r) => [r.kind, r.enabled === 1]));
-  return NOTICE_KINDS.map((kind) => ({
+  return NOTICE_KINDS.filter((kind) => !personalStudio || (kind !== "credits_low" && kind !== "plan")).map((kind) => ({
     kind,
     label: KIND_INFO[kind].label,
     group: KIND_INFO[kind].group,

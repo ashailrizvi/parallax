@@ -1,9 +1,13 @@
 import "server-only";
 
+import { randomUUID } from "node:crypto";
 import { usdToMillicredits } from "@/config/economy";
+import { personalStudio } from "@/config/studio-mode";
 import { catalogEndpoint, getModel, type MediaType } from "@/registry";
+import { COMFY_IMAGE_ENDPOINT } from "@/registry/local";
 import { assetsOfJobs, ownedAsset, readAsset, removeAsset, saveAsset, type AssetRow } from "./assets";
 import { grant, release, settle } from "./credits";
+import { ComfyUnreachable, isComfyImage, readComfyImage, submitComfyImage } from "./comfy";
 import { all, get, parseJson, run, tx } from "./db";
 import { ApiError } from "./errors";
 import { ResultError, mediaFromReply, mediaFromTask } from "./extract";
@@ -136,16 +140,31 @@ function sweep(minAgeMs: number) {
 }
 
 /** Google's routes are never answered from a stored copy, so sending twice could charge twice. */
-const replayable = (endpoint: string) => !endpoint.startsWith("google-ai.");
+const replayable = (endpoint: string) => !endpoint.startsWith("google-ai.") && endpoint !== COMFY_IMAGE_ENDPOINT;
 
 /* --------------------------------- submit --------------------------------- */
 
 async function start(job: JobRow) {
   const now = Date.now();
-  const claimed = run("UPDATE jobs SET status = 'running', started_at = COALESCE(started_at, ?), attempts = attempts + 1 WHERE id = ? AND status = 'queued'", now, job.id).changes === 1;
+  const promptId = isComfyImage(job) ? randomUUID() : null;
+  const claimed = run(
+    "UPDATE jobs SET status = 'running', started_at = COALESCE(started_at, ?), attempts = attempts + 1, treg_call_id = COALESCE(?, treg_call_id) WHERE id = ? AND status = 'queued'",
+    now, promptId, job.id,
+  ).changes === 1;
   if (!claimed) return;
   const attempts = job.attempts + 1;
   const output = outputOf(job);
+
+  if (promptId) {
+    if (!personalStudio) return fail(job.id, "model_unavailable", "Local ComfyUI generation requires personal mode.");
+    try {
+      await submitComfyImage(job, promptId);
+    } catch (error) {
+      // An ambiguous submit can still complete under our stored prompt ID. Never send it twice.
+      if (!(error instanceof ComfyUnreachable)) throw error;
+    }
+    return;
+  }
 
   if (tregMode() === "mock") {
     run("UPDATE jobs SET treg_call_id = 'mock', next_poll_at = ? WHERE id = ?", now + mockDelayMs(output), job.id);
@@ -253,14 +272,25 @@ const sleep = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
 async function poll(job: JobRow) {
   const output = outputOf(job);
+  const later = (ms: number) => void run("UPDATE jobs SET next_poll_at = ? WHERE id = ? AND status = 'running'", Date.now() + ms, job.id);
+  if (isComfyImage(job)) {
+    try {
+      const bytes = await readComfyImage(job.treg_call_id!);
+      if (bytes) return finish(job, [bytes]);
+    } catch (error) {
+      if (!(error instanceof ComfyUnreachable)) throw error;
+    }
+    if (expired(job, output)) return fail(job.id, "timeout", "ComfyUI did not return an image. Check the local queue before trying again.");
+    return later(2000);
+  }
+
 
   if (job.treg_call_id === "mock") {
     if (mockShouldFail(job.prompt)) return fail(job.id, "provider_error", "The mock model fails on purpose when the prompt contains [fail].");
     const files = await mockMedia({ output, prompt: job.prompt, params: parseJson(job.params, {}), count: job.expect_count, seed: job.id });
     return finish(job, files);
   }
-
-  const later = (ms: number) => void run("UPDATE jobs SET next_poll_at = ? WHERE id = ? AND status = 'running'", Date.now() + ms, job.id);
+  if (personalStudio) return fail(job.id, "interrupted", "A previous provider job was interrupted when personal mode started.");
 
   let task: TregTask;
   try {

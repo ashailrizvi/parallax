@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { AtSign, Eye, EyeOff, Gift, Info, LockKeyhole } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useId, useState, type FormEvent } from "react";
@@ -167,7 +168,7 @@ export function LoginForm({
           <Info className="mt-px size-4 shrink-0" strokeWidth={1.5} aria-hidden />
           <span>{mode === "join" ? c.guestKeep : c.guestLose}</span>
         </p>
-      ) : mode === "join" ? (
+      ) : mode === "join" && !personalStudio ? (
         <p className="flex h-12 items-center justify-center gap-2 text-sm leading-4 font-medium text-brand">
           <Gift className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
           {c.joinPerk}

@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { ArrowRight, ArrowUpRight, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import { CREDIT_USD, formatCredits, GUEST_CREDITS, MAX_BATCH, MILLI, PLANS, SIGNUP_CREDITS } from "@/config/economy";
@@ -20,9 +21,9 @@ export function GuidePage() {
       <header className="flex flex-col items-center gap-[6px] pt-16 pb-10 text-center desktop:pt-20">
         <p className="text-xs leading-5 font-medium tracking-[0.0833em] text-text-idle uppercase">{copy.eyebrow}</p>
         <Display as="h1" lines={[copy.title]} className="items-center text-3xl leading-9 desktop:text-[40px] desktop:leading-[48px]" />
-        <p className="mt-2 text-sm leading-5 text-text-tab">{copy.lead}</p>
+        <p className="mt-2 text-sm leading-5 text-text-tab">{personalStudio ? "Find the right studio and write a prompt." : copy.lead}</p>
         <nav aria-label={copy.eyebrow} className="mt-6 flex h-10 items-center gap-1 rounded-full border border-border-subtle bg-border-subtle px-[3px]">
-          {copy.nav.map((n) => (
+          {copy.nav.filter((item) => !personalStudio || item.id !== "credits").map((n) => (
             <a
               key={n.id}
               href={`#${n.id}`}
@@ -35,7 +36,7 @@ export function GuidePage() {
       </header>
 
       <div className="flex w-full max-w-[1312px] flex-col gap-20">
-        <Credits />
+        {!personalStudio ? <Credits /> : null}
         <Studios />
         <Prompts />
       </div>

@@ -1,3 +1,4 @@
+import { personalStudio } from "@/config/studio-mode";
 import "server-only";
 
 import { MILLI, formatCredits } from "@/config/economy";
@@ -59,7 +60,7 @@ function jobNotices(userId: string, after: number): number {
     } else {
       notify(userId, "generation_failed", {
         title: `Your ${noun} did not finish`,
-        body: `${j.error_message ? snippet(j.error_message) + " " : ""}The credits for it were returned.`,
+        body: [j.error_message && snippet(j.error_message), !personalStudio && "The credits for it were returned."].filter(Boolean).join(" "),
         link: `${STUDIO[j.kind] ?? "/library"}?job=${j.id}`,
         data,
         dedupeKey: `job:${j.id}:failed`,
@@ -96,7 +97,7 @@ export function syncNotices(userId: string, force = false) {
   tx(() => {
     const s = state ?? { jobs_after: 0, credit_level: 0, credit_armed: 0, synced_at: 0 };
     const jobsAfter = jobNotices(userId, s.jobs_after);
-    const credit = creditNotice(userId, s);
+    const credit = personalStudio ? s : creditNotice(userId, s);
     run(
       `INSERT INTO notify_state (user_id, jobs_after, credit_level, credit_armed, synced_at) VALUES (?, ?, ?, ?, ?)
        ON CONFLICT (user_id) DO UPDATE SET jobs_after = excluded.jobs_after, credit_level = excluded.credit_level,

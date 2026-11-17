@@ -1,10 +1,13 @@
 import type { ReactNode } from "react";
+import { personalStudio } from "@/config/studio-mode";
 import type { NavId } from "@/content/site";
 import { cn } from "@/ui";
 import { CompactNav } from "./compact-nav";
 import { FullNav } from "./full-nav";
 import { PromoBanner } from "./promo-banner";
 import { SiteFooter } from "./site-footer";
+
+const demoStudios = new Set<NavId>(["video", "audio", "remix", "cinema", "shorts", "apps", "ads"]);
 
 /**
  * The frame around every app page: the offer strip, the nav, then the page.
@@ -41,6 +44,11 @@ export function AppShell({
     <div className={cn("flex flex-col", fixed ? "h-dvh overflow-hidden" : "min-h-dvh", className)}>
       <PromoBanner />
       {nav === "full" ? <FullNav active={active} /> : <CompactNav active={active} />}
+      {personalStudio && active && demoStudios.has(active) ? (
+        <p className="shrink-0 border-b border-border-subtle px-4 pb-2 text-xs text-text-nav">
+          Demo mode uses bundled samples.
+        </p>
+      ) : null}
       <main className="relative flex min-h-0 flex-1 flex-col">{children}</main>
       {footer && !fixed ? <SiteFooter /> : null}
     </div>

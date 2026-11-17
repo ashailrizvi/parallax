@@ -1,11 +1,11 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { useEffect, useRef, useState } from "react";
 import useSWR, { mutate as mutateCache } from "swr";
 import {
   clampCount,
   defaultModel,
-  getModel,
   modelsFor,
   quoteJob,
   resolveValues,
@@ -179,10 +179,7 @@ export function useStudio(surface: string): Studio {
   const fail = (e: unknown) => setError(errorMessage(e), e instanceof ApiError ? e.code : "error");
   const error = failure?.message ?? null;
 
-  const onSurface = (id: string | null) => {
-    const m = getModel(id);
-    return m && m.surfaces.includes(surface) ? m : undefined;
-  };
+  const onSurface = (id: string | null) => models.find((model) => model.id === id);
   const model = onSurface(picked) ?? onSurface(fromAddress) ?? defaultModel(surface);
 
   const filled: Filled = {};
@@ -196,7 +193,7 @@ export function useStudio(surface: string): Studio {
   const text = prompt.trim();
 
   let quote: JobQuote | null = null;
-  if (model && model.status === "available") {
+  if (!personalStudio && model && model.status === "available") {
     try {
       quote = quoteJob(model, { prompt: text, values, filled, count: safeCount });
     } catch {

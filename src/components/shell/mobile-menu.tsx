@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Building2, Crown, Menu, X } from "lucide-react";
 import { Dialog as D } from "radix-ui";
 import Link from "next/link";
@@ -103,24 +104,28 @@ export function MobileMenu({ active, onAsk, size }: { active?: NavId; onAsk: (mo
             {navStudios.map((l) => (
               <PanelLink key={l.id} link={l} active={l.id === active} onDone={done} />
             ))}
-            <div className="my-2 h-px shrink-0 bg-border-subtle" />
-            <Link
-              href={routes.enterprise}
-              onClick={done}
-              className="flex h-10 items-center gap-2 rounded-lg px-3 text-sm leading-5 font-medium text-text-primary transition-colors duration-150 hover:bg-border-subtle"
-            >
-              <Building2 className="size-4 text-text-secondary" strokeWidth={1.5} aria-hidden />
-              {navWords.enterprise}
-            </Link>
-            <Link
-              href={routes.pricing}
-              onClick={done}
-              className="flex h-10 items-center gap-2 rounded-lg px-3 text-sm leading-5 font-medium text-brand transition-colors duration-150 hover:bg-border-subtle"
-            >
-              <Crown className="size-4 fill-current" strokeWidth={1.5} aria-hidden />
-              {member ? navWords.upgrade : navWords.pricing}
-              {pricingBadge ? <span>{pricingBadge}</span> : null}
-            </Link>
+            {!personalStudio ? (
+              <>
+                <div className="my-2 h-px shrink-0 bg-border-subtle" />
+                <Link
+                  href={routes.enterprise}
+                  onClick={done}
+                  className="flex h-10 items-center gap-2 rounded-lg px-3 text-sm leading-5 font-medium text-text-primary transition-colors duration-150 hover:bg-border-subtle"
+                >
+                  <Building2 className="size-4 text-text-secondary" strokeWidth={1.5} aria-hidden />
+                  {navWords.enterprise}
+                </Link>
+                <Link
+                  href={routes.pricing}
+                  onClick={done}
+                  className="flex h-10 items-center gap-2 rounded-lg px-3 text-sm leading-5 font-medium text-brand transition-colors duration-150 hover:bg-border-subtle"
+                >
+                  <Crown className="size-4 fill-current" strokeWidth={1.5} aria-hidden />
+                  {member ? navWords.upgrade : navWords.pricing}
+                  {pricingBadge ? <span>{pricingBadge}</span> : null}
+                </Link>
+              </>
+            ) : null}
           </nav>
 
           {member ? (

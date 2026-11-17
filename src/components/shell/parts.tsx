@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Building2, Crown, Languages, Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -62,6 +63,7 @@ export function LanguagePlate() {
 }
 
 export function EnterprisePlate() {
+  if (personalStudio) return null;
   return (
     <Link href={routes.enterprise} className={cn("flex h-8 shrink-0 items-center gap-2 px-[10px] text-xs leading-4 font-medium whitespace-nowrap", plate)}>
       <Building2 className="size-[14px]" strokeWidth={1.5} aria-hidden />
@@ -72,6 +74,7 @@ export function EnterprisePlate() {
 
 /** "Pricing" or "Upgrade", with the yearly saving hanging under it in the pink tab, as drawn. */
 export function PricingPlate({ label }: { label: string }) {
+  if (personalStudio) return null;
   return (
     <Link
       href={routes.pricing}

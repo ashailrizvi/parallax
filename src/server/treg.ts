@@ -2,6 +2,7 @@ import "server-only";
 
 import { lookup } from "node:dns/promises";
 import net from "node:net";
+import { personalStudio } from "@/config/studio-mode";
 import { catalogEndpoint } from "@/registry/quote";
 
 /**
@@ -23,6 +24,7 @@ const token = () => (process.env.TREG_TOKEN ?? "").trim();
 
 /** `mock` makes every generation locally, with no provider call and no cost. */
 export function tregMode(): "live" | "mock" {
+  if (personalStudio) return "mock";
   const mode = process.env.TREG_MODE;
   if (mode === "mock") return "mock";
   if (mode === "live") return "live";

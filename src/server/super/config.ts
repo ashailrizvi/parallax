@@ -1,3 +1,4 @@
+import { personalStudio } from "@/config/studio-mode";
 import "server-only";
 
 import { readFileSync } from "node:fs";
@@ -19,6 +20,7 @@ const KEYS: Record<Service, string> = {
 };
 
 export function serviceMode(service: Service): "live" | "mock" {
+  if (personalStudio) return "mock";
   if (service === "llm" && hermesEngine()) return "live";
   return process.env.SUPER_MODE === "live" && !!process.env[KEYS[service]] ? "live" : "mock";
 }
@@ -54,6 +56,7 @@ let warned = false;
 
 /** The Hermes engine's settings, or null when the built-in engine is in charge. */
 export function hermesEngine(): HermesEngine | null {
+  if (personalStudio) return null;
   if ((process.env.SUPER_ENGINE ?? "").trim().toLowerCase() !== "hermes") return null;
   let url: string | null = null;
   try {

@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { CircleAlert, Play, RotateCcw, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { mutate } from "swr";
@@ -220,7 +221,7 @@ function Failed({ job }: { job: Job }) {
           {job.error?.message ?? t.history.failed}
         </p>
         <p className="line-clamp-1 text-xs leading-4 text-text-secondary">
-          {problem ?? t.history.refunded}
+          {problem ?? (personalStudio ? "The generation did not finish." : t.history.refunded)}
         </p>
         <Button
           variant="soft"

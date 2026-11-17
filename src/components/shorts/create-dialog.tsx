@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Clock, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -125,7 +126,7 @@ export function CreateDialog({
             {shorts.error ? (
               <div role="alert" className="flex items-start gap-3 rounded-xl bg-[#FF6B6B1A] px-4 py-3 text-sm leading-5 text-danger">
                 <span className="min-w-0 flex-1">{shorts.error}</span>
-                {shorts.errorCode === "insufficient_credits" ? (
+                {!personalStudio && shorts.errorCode === "insufficient_credits" ? (
                   <Link href={routes.pricing} className="shrink-0 font-semibold text-brand hover:underline">
                     {copy.topUp}
                   </Link>
@@ -155,11 +156,13 @@ export function CreateDialog({
               </p>
             ) : null}
 
-            <div className="flex items-center justify-between gap-4">
-              <span className="flex min-w-0 items-center gap-1 text-sm leading-5 text-text-secondary">
-                <Sparkles className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
-                <span className="truncate">{price ? copy.cost(price) : copy.noPrice}</span>
-              </span>
+            <div className={cn("flex items-center gap-4", personalStudio ? "justify-end" : "justify-between")}>
+              {!personalStudio ? (
+                <span className="flex min-w-0 items-center gap-1 text-sm leading-5 text-text-secondary">
+                  <Sparkles className="size-4 shrink-0" strokeWidth={1.5} aria-hidden />
+                  <span className="truncate">{price ? copy.cost(price) : copy.noPrice}</span>
+                </span>
+              ) : null}
               <button type="submit" disabled={shorts.busy} className={cn(LIME_BUTTON, "w-[142px] shrink-0 disabled:cursor-progress")}>
                 {shorts.busy ? <Spinner /> : copy.generate}
               </button>

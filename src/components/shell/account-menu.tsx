@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { ChevronRight, CircleHelp, Coins, Crown, Folder, Gift, LogOut, Settings, Sparkles, UserRound, BookOpen } from "lucide-react";
 import { Popover as P } from "radix-ui";
 import Link from "next/link";
@@ -86,42 +87,44 @@ export function AccountPanel({ onDone }: { onDone?: () => void }) {
         <Avatar name={name} url={member.avatarUrl} size={40} />
         <span className="flex min-w-0 grow flex-col">
           <span className="truncate text-sm leading-5 font-medium text-text-primary">{name}</span>
-          <span className="truncate text-sm leading-5 text-text-secondary">{accountWords.plan(plan.name)}</span>
+          {!personalStudio ? <span className="truncate text-sm leading-5 text-text-secondary">{accountWords.plan(plan.name)}</span> : null}
         </span>
         <ChevronRight className="size-4 shrink-0 text-text-secondary" strokeWidth={1.5} aria-hidden />
       </Link>
 
-      <section aria-label={accountWords.creditsHeading} className="flex flex-col rounded-2xl bg-border-subtle px-3 pt-3 pb-1">
-        <Link href={routes.wallet} onClick={onDone} className="flex h-5 shrink-0 items-center gap-[6px] rounded-sm">
-          <span className="text-sm leading-5 font-medium text-text-primary">{accountWords.creditsHeading}</span>
-          <span title={accountWords.creditsHint} className="flex text-text-secondary">
-            <CircleHelp className="size-[14px]" strokeWidth={1.5} aria-hidden />
-          </span>
-          <span className="grow" />
-          <span className="text-sm leading-5 text-text-secondary tabular-nums" data-balance={balance}>
-            {accountWords.left(formatCredits(balance))}
-          </span>
-          <ChevronRight className="size-3 shrink-0 text-text-secondary" strokeWidth={1.5} aria-hidden />
-        </Link>
-        <div
-          role="meter"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={pct}
-          aria-label={accountWords.meter(pct)}
-          className="flex items-center pt-[10px] pb-3"
-        >
-          <div className="h-[5px] rounded-full" style={{ width: `${pct}%`, background: dots("#D1FE17") }} />
-          <div className="h-[5px] grow rounded-full" style={{ background: dots("#FFFFFF1A") }} />
-        </div>
-        <GetRow href={routes.wallet} icon={<Coins className="size-4" strokeWidth={1.5} aria-hidden />} label={accountWords.topUp} onDone={onDone} />
-        <GetRow
-          href={routes.pricing}
-          icon={<Crown className="size-4 fill-current" strokeWidth={1.5} aria-hidden />}
-          label={plan.id === TOP_PLAN.id ? accountWords.changePlan : accountWords.upgrade}
-          onDone={onDone}
-        />
-      </section>
+      {!personalStudio ? (
+        <section aria-label={accountWords.creditsHeading} className="flex flex-col rounded-2xl bg-border-subtle px-3 pt-3 pb-1">
+          <Link href={routes.wallet} onClick={onDone} className="flex h-5 shrink-0 items-center gap-[6px] rounded-sm">
+            <span className="text-sm leading-5 font-medium text-text-primary">{accountWords.creditsHeading}</span>
+            <span title={accountWords.creditsHint} className="flex text-text-secondary">
+              <CircleHelp className="size-[14px]" strokeWidth={1.5} aria-hidden />
+            </span>
+            <span className="grow" />
+            <span className="text-sm leading-5 text-text-secondary tabular-nums" data-balance={balance}>
+              {accountWords.left(formatCredits(balance))}
+            </span>
+            <ChevronRight className="size-3 shrink-0 text-text-secondary" strokeWidth={1.5} aria-hidden />
+          </Link>
+          <div
+            role="meter"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={pct}
+            aria-label={accountWords.meter(pct)}
+            className="flex items-center pt-[10px] pb-3"
+          >
+            <div className="h-[5px] rounded-full" style={{ width: `${pct}%`, background: dots("#D1FE17") }} />
+            <div className="h-[5px] grow rounded-full" style={{ background: dots("#FFFFFF1A") }} />
+          </div>
+          <GetRow href={routes.wallet} icon={<Coins className="size-4" strokeWidth={1.5} aria-hidden />} label={accountWords.topUp} onDone={onDone} />
+          <GetRow
+            href={routes.pricing}
+            icon={<Crown className="size-4 fill-current" strokeWidth={1.5} aria-hidden />}
+            label={plan.id === TOP_PLAN.id ? accountWords.changePlan : accountWords.upgrade}
+            onDone={onDone}
+          />
+        </section>
+      ) : null}
 
       <nav aria-label={navWords.account} className="flex flex-col pt-[2px]">
         {member.handle ? (
@@ -135,9 +138,11 @@ export function AccountPanel({ onDone }: { onDone?: () => void }) {
         <Row href={routes.library} icon={<Folder className="size-4" strokeWidth={1.5} aria-hidden />} onDone={onDone}>
           {accountWords.library}
         </Row>
-        <Row href={routes.invite} icon={<Gift className="size-4" strokeWidth={1.5} aria-hidden />} onDone={onDone}>
-          {accountWords.invite}
-        </Row>
+        {!personalStudio ? (
+          <Row href={routes.invite} icon={<Gift className="size-4" strokeWidth={1.5} aria-hidden />} onDone={onDone}>
+            {accountWords.invite}
+          </Row>
+        ) : null}
         <Row href={routes.whatsNew} icon={<Sparkles className="size-4" strokeWidth={1.5} aria-hidden />} onDone={onDone}>
           {accountWords.whatsNew}
         </Row>

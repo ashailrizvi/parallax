@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Check, ChevronLeft, ChevronRight, Copy, Download, Heart, ImagePlus, Send, SlidersHorizontal, Trash2, Wand2 } from "lucide-react";
 import { useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import { VendorGlyph } from "@/components/brand/logo";
@@ -328,10 +329,12 @@ function ShotView({
               <dd className="text-text-primary tabular-nums">{`${asset.width} × ${asset.height}`}</dd>
             </div>
           ) : null}
-          <div className={row}>
-            <dt className="text-text-secondary">{v.cost}</dt>
-            <dd className="text-text-primary">{v.costFor(formatCredits(job.cost), job.assets.length)}</dd>
-          </div>
+          {!personalStudio ? (
+            <div className={row}>
+              <dt className="text-text-secondary">{v.cost}</dt>
+              <dd className="text-text-primary">{v.costFor(formatCredits(job.cost), job.assets.length)}</dd>
+            </div>
+          ) : null}
           <div className={row}>
             <dt className="text-text-secondary">{v.made}</dt>
             <dd className="text-text-primary">{dateFormat.format(job.finishedAt ?? job.createdAt)}</dd>

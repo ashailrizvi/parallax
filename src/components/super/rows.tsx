@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import {
   AlertTriangle,
   Ban,
@@ -226,7 +227,7 @@ function ApprovalCard({ body }: { body: B }) {
         {tool === "generate_media" ? (
           <>
             <Field label={copy.rows.model}>{str(body.modelName) || str(body.modelId)}</Field>
-            {str(body.priceLabel) ? <Field label={copy.rows.price}>{str(body.priceLabel)}</Field> : null}
+            {!personalStudio && str(body.priceLabel) ? <Field label={copy.rows.price}>{str(body.priceLabel)}</Field> : null}
             <div className="sm:col-span-2">
               <Field label={copy.schedules.prompt}>{str(body.prompt)}</Field>
             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { Building2, Crown, Folder, Gift, Languages, Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -48,6 +49,7 @@ function SearchButton() {
 }
 
 function EnterpriseLink() {
+  if (personalStudio) return null;
   return (
     <Link href={routes.enterprise} className={cn(quietLink, "hidden text-text-idle hover:text-text-tab lg:inline-flex")}>
       <Building2 className="size-[14px]" strokeWidth={1.5} aria-hidden />
@@ -57,6 +59,7 @@ function EnterpriseLink() {
 }
 
 function PlansLink({ label }: { label: string }) {
+  if (personalStudio) return null;
   return (
     <Link href={routes.pricing} className={cn(quietLink, "inline-flex text-brand hover:opacity-80")}>
       <Crown className="size-[14px] fill-current" strokeWidth={1.5} aria-hidden />
@@ -129,10 +132,12 @@ function MemberCluster({ active }: { active?: NavId }) {
         <Link href={routes.library} aria-label="Library" className={iconButtonClass(24, "dim")}>
           <Folder className="size-4 fill-current" strokeWidth={1.5} aria-hidden />
         </Link>
-        <Link href={routes.invite} aria-label="Invite a friend, earn credits" className={iconButtonClass(28, "lime", "relative")}>
-          <Gift className="size-4" strokeWidth={1.5} aria-hidden />
-          <span aria-hidden className="absolute top-[3px] right-[3px] size-[6px] rounded-full bg-brand ring-2 ring-page" />
-        </Link>
+        {!personalStudio ? (
+          <Link href={routes.invite} aria-label="Invite a friend, earn credits" className={iconButtonClass(28, "lime", "relative")}>
+            <Gift className="size-4" strokeWidth={1.5} aria-hidden />
+            <span aria-hidden className="absolute top-[3px] right-[3px] size-[6px] rounded-full bg-brand ring-2 ring-page" />
+          </Link>
+        ) : null}
       </span>
       <EnterpriseLink />
       <span className="hidden min-[900px]:inline-flex">
