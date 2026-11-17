@@ -5,17 +5,18 @@
  */
 import { musicModels, speechModels } from "./audio";
 import { imageModels } from "./image";
-import { localH3Image } from "./local";
+import { localH3Image, localH3Video } from "./local";
 import { videoModels } from "./video";
 import type { ModelDef } from "./types";
 import { personalStudio } from "../config/studio-mode";
 
+const localModels = [localH3Image, localH3Video];
 export const models: ModelDef[] = [
-  ...(personalStudio ? [localH3Image] : []), ...imageModels, ...videoModels, ...speechModels, ...musicModels,
+  ...(personalStudio ? localModels : []), ...imageModels, ...videoModels, ...speechModels, ...musicModels,
 ];
 
 const byId = new Map(models.map((m) => [m.id, m]));
-byId.set(localH3Image.id, localH3Image);
+for (const model of localModels) byId.set(model.id, model);
 
 export function getModel(id: string | null | undefined): ModelDef | undefined {
   return id ? byId.get(id) : undefined;
@@ -24,6 +25,7 @@ export function getModel(id: string | null | undefined): ModelDef | undefined {
 /** Models for one studio or tool, in display order. */
 export function modelsFor(surface: string): ModelDef[] {
   if (personalStudio && surface === "image") return [localH3Image];
+  if (personalStudio && surface === "video") return [localH3Video];
   return models.filter((m) => m.surfaces.includes(surface));
 }
 

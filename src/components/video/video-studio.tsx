@@ -4,6 +4,7 @@ import { Clapperboard, FolderClosed, CircleHelp } from "lucide-react";
 import Link from "next/link";
 import { useRef, useState } from "react";
 import { LoginDialog } from "@/components/entry/login-dialog";
+import { personalStudio } from "@/config/studio-mode";
 import { routes } from "@/content/site";
 import { videoCopy as t, type VideoExample } from "@/content/video";
 import type { Asset, Job } from "@/lib/api";
@@ -66,7 +67,7 @@ export function VideoStudio() {
           studio={studio}
           tab={tab}
           onTab={setTab}
-          signedOut={signedOut}
+          signedOut={signedOut && !personalStudio}
           onSignIn={() => setSignIn(true)}
           onGenerate={() => void generate()}
         />

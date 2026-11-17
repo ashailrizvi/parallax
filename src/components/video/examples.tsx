@@ -1,5 +1,6 @@
 "use client";
 
+import { personalStudio } from "@/config/studio-mode";
 import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import {
@@ -78,7 +79,7 @@ export function Examples({
           {t.hero.title}
         </h1>
         <p className="max-w-[580px] text-sm leading-5 text-text-secondary">
-          {t.hero.body}
+          {personalStudio ? "Describe a shot or start from a sample prompt. Add a start frame to animate an image." : t.hero.body}
         </p>
       </div>
       <div className="flex h-16 items-start">

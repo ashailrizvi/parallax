@@ -4,12 +4,14 @@ Ace Studio adapts [Parallax](https://github.com/nickvasilescu/parallax) into a w
 
 ## Personal workspace with ComfyUI
 
-1. Start your existing ComfyUI installation on a loopback address. Ace Studio uses ComfyUI 0.45.3 and the installed **MiniMax H3 Image – Text to Image** workflow. This integration uses ComfyUI's caller-supplied prompt IDs to resume polling after an Ace Studio restart.
-2. Enable developer options in ComfyUI and export the **API format** of that workflow. Save it locally as `data/comfy/h3-image-api.json` or set `ACE_STUDIO_H3_WORKFLOW` to an existing API export. The file contains the executable node map. Keep the trained weights in ComfyUI's normal model paths.
+1. Start your existing ComfyUI installation on a loopback address. Ace Studio uses ComfyUI 0.45.3 and caller-supplied prompt IDs to resume polling after an Ace Studio restart.
+2. From ComfyUI, export the workflows in **API format**. Save **MiniMax H3 Image – Text to Image** as `data/comfy/h3-image-api.json`. Save the enabled **Text To Video** branch of **MiniMax H3 – 5060 Ti Preview** as `data/comfy/h3-video-api.json`. Use `ACE_STUDIO_H3_WORKFLOW` and `ACE_STUDIO_H3_VIDEO_WORKFLOW` to select other paths. Keep the weights in ComfyUI's normal model paths.
 3. In `.env.local`, set `NEXT_PUBLIC_ACE_STUDIO_MODE=personal` and set `ACE_STUDIO_COMFY_URL` to the loopback address, such as `http://127.0.0.1:8189`. Set these before starting the dev server or building for production.
-4. Run `npm.cmd ci --ignore-scripts` and `npm.cmd run dev -- --hostname 127.0.0.1 --port 3210`. Open [Image](http://127.0.0.1:3210/image), enter a prompt, and press **Generate**. A finished image appears in the Image history and Library for the active local session.
+4. Run `npm.cmd ci --ignore-scripts` and `npm.cmd run dev -- --hostname 127.0.0.1 --port 3210`. Enter a prompt in [Image](http://127.0.0.1:3210/image) or [Video](http://127.0.0.1:3210/video), then press **Generate**. Finished assets appear in studio history and the Library for the active local session.
 
-Personal mode disables wallet, subscriptions, referrals and developer key/MCP routes. It also skips new credit holds and uses bundled samples for the other generation studios. The Image tab runs the saved H3 text-to-image graph with the selected aspect ratio and resolution, a random seed and one image per job. Neither ComfyUI nor the browser requires a provider token.
+Personal mode disables wallet, subscriptions, referrals and developer key/MCP routes. It skips credit holds and uses bundled samples outside the two local generation studios. Image exposes aspect ratio and resolution. Video uses the saved 736 × 416, 24 fps preview preset with native audio and an optional start frame. Ace Studio sends that frame to ComfyUI's `input/ace-studio` folder and fits it to the preset without cropping. Both studios use a random seed and return one asset per job. Local generation requires no provider token.
+
+On the verified ComfyUI 0.45.3 setup, turn off Spectrum in the video API export. Its forecast node fails on this version of the native H3 core.
 
 Company use of H3 Image is subject to the [model's separate license](https://github.com/MiniMax-AI/MiniMax-H3-Image/blob/main/LICENSE).
 

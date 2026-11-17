@@ -347,12 +347,11 @@ function MiniToggle({
 }
 
 function PromptCard({ studio }: { studio: Studio }) {
-  // Closed at rest, as drawn. It opens on its own once there is text (an example, a past job)
-  // or when Generate was pressed without any.
+  // Keep the prompt visible by default in the local studio.
   const [chosen, setOpen] = useState<boolean | null>(null);
   const open =
     chosen ??
-    (studio.prompt.length > 0 ||
+    (personalStudio || studio.prompt.length > 0 ||
       (studio.errorCode === "blocked" && !studio.prompt.trim()));
   const label = studio.model?.prompt?.label ?? t.prompt;
   return (

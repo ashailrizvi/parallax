@@ -3,7 +3,7 @@ import "server-only";
 import { MAX_BATCH, formatCredits, planOf } from "@/config/economy";
 import { personalStudio } from "@/config/studio-mode";
 import { assetRef, catalogEndpoint, getModel, quoteJob, resolveValues, visibleSlots, type Filled, type Kind, type MediaRef, type MediaType, type ModelDef, type Values } from "@/registry";
-import { COMFY_IMAGE_ENDPOINT, localH3Image } from "@/registry/local";
+import { isComfyEndpoint, localH3Image, localH3Video } from "@/registry/local";
 import { assetsOfJobs, ownedAsset, removeAsset, toAsset, type Asset, type AssetRow } from "./assets";
 import type { User } from "./auth";
 import { balance, hold, release } from "./credits";
@@ -176,9 +176,12 @@ export interface SubmitInput {
 export function submitJobs(user: User, input: SubmitInput): Job[] {
   const model = getModel(typeof input.modelId === "string" ? input.modelId : null);
   if (!model) throw badRequest("Pick a model first.");
-  const isLocalModel = model.id === localH3Image.id;
-  if ((!personalStudio && isLocalModel) || (personalStudio && input.surface === "image" && !isLocalModel)) {
-    throw badRequest("Pick an image model available in this studio.");
+  const surface = typeof input.surface === "string" && /^[a-z0-9-]{1,40}$/.test(input.surface) ? input.surface : (model.surfaces[0] ?? model.kind);
+  const isLocalModel = model.id === localH3Image.id || model.id === localH3Video.id;
+  const localStudioModel = surface === "image" ? localH3Image : surface === "video" ? localH3Video : undefined;
+  if ((isLocalModel && (!personalStudio || model.id !== localStudioModel?.id)) ||
+      (personalStudio && localStudioModel && model.id !== localStudioModel.id)) {
+    throw badRequest("Pick a model available in this studio.");
   }
   if (model.status !== "available") throw new ApiError(409, "model_unavailable", model.statusNote ?? `${model.name} is not available right now.`);
 
@@ -213,7 +216,7 @@ export function submitJobs(user: User, input: SubmitInput): Job[] {
 
   const asked = Math.floor(Number(input.count)) || 1;
   const quote = quoteJob(model, { prompt, values, media, filled, count: model.batch.native ? asked : Math.min(asked, MAX_BATCH) });
-  if (quote.request.endpoint !== COMFY_IMAGE_ENDPOINT && !catalogEndpoint(quote.request.endpoint)) {
+  if (!isComfyEndpoint(quote.request.endpoint) && !catalogEndpoint(quote.request.endpoint)) {
     throw new ApiError(409, "model_unavailable", `${model.name} is not available right now.`);
   }
 
@@ -235,7 +238,6 @@ export function submitJobs(user: User, input: SubmitInput): Job[] {
     }
   }
 
-  const surface = typeof input.surface === "string" && /^[a-z0-9-]{1,40}$/.test(input.surface) ? input.surface : (model.surfaces[0] ?? model.kind);
   const metaText = isRecord(input.meta) ? JSON.stringify(input.meta) : "{}";
   const inputIds = JSON.stringify(Object.fromEntries(Object.entries(files).map(([slot, list]) => [slot, list.map((a) => a.id)])));
   const request = JSON.stringify({ body: quote.request.body, query: quote.request.query ?? {}, headers: quote.request.headers ?? {} });

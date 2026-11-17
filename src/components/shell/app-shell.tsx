@@ -7,7 +7,7 @@ import { FullNav } from "./full-nav";
 import { PromoBanner } from "./promo-banner";
 import { SiteFooter } from "./site-footer";
 
-const demoStudios = new Set<NavId>(["video", "audio", "remix", "cinema", "shorts", "apps", "ads"]);
+const demoStudios = new Set<NavId>(["audio", "remix", "cinema", "shorts", "apps", "ads"]);
 
 /**
  * The frame around every app page: the offer strip, the nav, then the page.

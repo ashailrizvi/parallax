@@ -1,6 +1,11 @@
 import type { ModelDef } from "./types";
 
 export const COMFY_IMAGE_ENDPOINT = "comfyui.h3-image";
+export const COMFY_VIDEO_ENDPOINT = "comfyui.h3-video";
+
+export function isComfyEndpoint(endpoint: string): boolean {
+  return endpoint === COMFY_IMAGE_ENDPOINT || endpoint === COMFY_VIDEO_ENDPOINT;
+}
 
 const aspectRatios = [
   "1:1 (Square)", "2:3 (Portrait Photo)", "3:2 (Photo)", "3:4 (Portrait Standard)",
@@ -35,4 +40,22 @@ export const localH3Image: ModelDef = {
     endpoint: COMFY_IMAGE_ENDPOINT,
     body: { prompt, aspectRatio: values.aspect_ratio, megapixels: Number(values.resolution) },
   }),
+};
+
+export const localH3Video: ModelDef = {
+  id: "minimax-h3-video-local",
+  kind: "video",
+  name: "MiniMax H3 Video",
+  vendor: "MiniMax",
+  tagline: "Local preview · 736 × 416 · 3 seconds · 24 fps",
+  featured: true,
+  status: "available",
+  surfaces: ["video"],
+  prompt: { required: true, maxLength: 4000 },
+  slots: [{ id: "start", label: "Start frame", accept: ["image"], min: 0, max: 1 }],
+  controls: [],
+  batch: { max: 1, native: false },
+  output: "video",
+  eta: 120,
+  build: ({ prompt }) => ({ endpoint: COMFY_VIDEO_ENDPOINT, body: { prompt } }),
 };
